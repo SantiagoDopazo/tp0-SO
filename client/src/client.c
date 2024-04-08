@@ -38,8 +38,7 @@ int main(void)
 
 	/* ---------------- LEER DE CONSOLA ---------------- */
 
-	leer_consola(logger);
-
+	//leer_consola(logger); ahora leemos directamente para mandar
 	/*---------------------------------------------------PARTE 3-------------------------------------------------------------*/
 
 	// ADVERTENCIA: Antes de continuar, tenemos que asegurarnos que el servidor esté corriendo para poder conectarnos a él
@@ -82,12 +81,12 @@ t_config* iniciar_config(void)
 
 void leer_consola(t_log* logger)
 {
-char* leido;
+	char* leido;
 
 	// La primera te la dejo de yapa
 
 	leido = readline(">");
-	
+
 	// El resto, las vamos leyendo y logueando hasta recibir un string vacío
 
 	while(*leido != '\0'){
@@ -108,14 +107,26 @@ char* leido;
 void paquete(int conexion)
 {
 	// Ahora toca lo divertido!
-	char* leido;
-	t_paquete* paquete;
+
+	char* leido = NULL;
+	t_paquete* paquete = crear_paquete();
 
 	// Leemos y esta vez agregamos las lineas al paquete
 
-
+	leido = readline(">");
+	while(*leido != '\0'){
+		agregar_a_paquete(paquete, leido, strlen(leido)+1);
+		free(leido);
+		leido = readline(">");
+	}
+	printf("Se termino de leer por consola\n");
 	// ¡No te olvides de liberar las líneas y el paquete antes de regresar!
+
+	free(leido);
 	
+	enviar_paquete(paquete, conexion);
+
+	eliminar_paquete(paquete);
 }
 
 void terminar_programa(int conexion, t_log* logger, t_config* config)
@@ -128,5 +139,6 @@ void terminar_programa(int conexion, t_log* logger, t_config* config)
 	if(config){
 		config_destroy(config);
 	}
+	liberar_conexion(conexion);
 	return;
 }
