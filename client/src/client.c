@@ -82,15 +82,26 @@ t_config* iniciar_config(void)
 
 void leer_consola(t_log* logger)
 {
-	char* leido;
+char* leido;
 
 	// La primera te la dejo de yapa
-	leido = readline("> ");
 
+	leido = readline(">");
+	
 	// El resto, las vamos leyendo y logueando hasta recibir un string vacío
 
+	while(*leido != '\0'){
+		log_info(logger, "Lei la linea %s \n", leido);
+		free(leido);
+		leido = readline(">");
+	}
+	printf("Se termino de leer por consola\n");
 
 	// ¡No te olvides de liberar las lineas antes de regresar!
+
+	free(leido);
+
+	return;
 
 }
 
